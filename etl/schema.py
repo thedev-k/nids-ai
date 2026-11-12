@@ -1,4 +1,4 @@
-﻿import math
+import math
 from typing import Optional, Any, Dict
 from pydantic import BaseModel, Field, field_validator, ConfigDict
 
@@ -23,3 +23,58 @@ class NetworkFlow(BaseModel):
 
     @field_validator("flow_bytes_s", "flow_packets_s", mode="before")
     @classmethod
+    def clean_inf_and_nan(cls, v: Any) -> float:
+        if v is None:
+            return 0.0
+        try:
+            val = float(v)
+            if math.isnan(val) or math.isinf(val):
+                return 0.0
+            return val
+        except (ValueError, TypeError):
+            return 0.0
+
+    @field_validator("destination_port", mode="before")
+    @classmethod
+    def clamp_destination_port(cls, v: Any) -> int:
+        try:
+            port = int(float(v))
+            return max(0, min(65535, port))
+        except (ValueError, TypeError):
+            return 0
+
+    @field_validator("flow_duration", "total_fwd_packets", "total_backward_packets", mode="before")
+    @classmethod
+    def ensure_non_negative_int(cls, v: Any) -> int:
+        try:
+            val = int(float(v))
+            return max(0, val)
+        except (ValueError, TypeError):
+            return 0
+
+    @field_validator("packet_length_mean", mode="before")
+    @classmethod
+    def ensure_non_negative_float(cls, v: Any) -> float:
+        try:
+            val = float(v)
+            if math.isnan(val) or math.isinf(val):
+                return 0.0
+            return max(0.0, val)
+        except (ValueError, TypeError):
+            return 0.0
+
+
+def validate_records(records: list[Dict[str, Any]]) -> tuple[list[Dict[str, Any]], int]:
+    """
+    Validates a list of dictionaries against NetworkFlow model.
+    Returns (valid_records, invalid_count).
+    """
+    valid = []
+    invalid_count = 0
+    for record in records:
+        try:
+            flow = NetworkFlow(**record)
+            valid.append(flow.model_dump())
+        except Exception:
+            invalid_count += 1
+    return valid, invalid_count
