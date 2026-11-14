@@ -1,4 +1,4 @@
-﻿import json
+import json
 import sqlite3
 from pathlib import Path
 from typing import Dict, Any, List
@@ -93,3 +93,60 @@ def get_class_distribution() -> List[Dict[str, Any]]:
 
 
 @app.get("/api/correlation-matrix")
+def get_correlation_matrix() -> Dict[str, Any]:
+    """
+    Returns precomputed correlation matrix of the 10-15 most correlated features + is_attack.
+    Conforms to Requirement 2 for real Plotly.js heatmap rendering.
+    """
+    if not DB_PATH.exists():
+        return {"features": [], "matrix": [], "correlations_with_attack": {}}
+
+    try:
+        conn = get_db()
+        cursor = conn.cursor()
+        cursor.execute("SELECT data_json FROM eda_metadata WHERE config_key = 'correlation_matrix' LIMIT 1;")
+        row = cursor.fetchone()
+        conn.close()
+        if row:
+            return json.loads(row["data_json"])
+    except Exception:
+        pass
+    return {"features": [], "matrix": [], "correlations_with_attack": {}}
+
+
+@app.get("/api/scatter-sample")
+def get_scatter_sample() -> List[Dict[str, Any]]:
+    """
+    Returns stratified sample points partitioned across attack labels (including DDoS).
+    Conforms to Requirement 3 for volumetric profiling.
+    """
+    if not DB_PATH.exists():
+        return []
+
+    try:
+        conn = get_db()
+        cursor = conn.cursor()
+        cursor.execute("SELECT * FROM eda_scatter_sample;")
+        rows = [dict(r) for r in cursor.fetchall()]
+        conn.close()
+        return rows
+    except Exception:
+        return []
+
+
+# Mount static assets directory
+if STATIC_DIR.exists():
+    app.mount("/static", StaticFiles(directory=str(STATIC_DIR)), name="static")
+
+
+@app.get("/")
+def serve_index():
+    index_file = STATIC_DIR / "index.html"
+    if index_file.exists():
+        return FileResponse(index_file)
+    return {"message": "NIDS EDA Dashboard API is running. UI static file not found."}
+
+
+if __name__ == "__main__":
+    import uvicorn
+    uvicorn.run("main:app", host="0.0.0.0", port=8050, reload=True)
