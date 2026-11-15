@@ -1,10 +1,10 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>NIDS Intelligence Dashboard | AI-Powered Intrusion Detection</title>
-  <meta name="description" content="Network Intrusion Detection EDA Dashboard â€” CICIDS2017 traffic telemetry, class distribution, Pearson correlation heatmap, and volumetric profiling." />
+  <meta name="description" content="Network Intrusion Detection EDA Dashboard — CICIDS2017 traffic telemetry, class distribution, Pearson correlation heatmap, and volumetric profiling." />
 
   <!-- Typography: Inter + JetBrains Mono -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -48,3 +48,245 @@
           <span>flows from CICIDS2017 (2.83M)</span>
           <span class="nav-sample-tag">STRATIFIED</span>
           <!-- Secondary ID hook for backwards compatibility -->
+          <span id="sampleCountBanner" style="display:none;"></span>
+        </div>
+      </div>
+
+      <!-- Live Status Beacon & Data Store -->
+      <div class="nav-right">
+        <div class="nav-status-badge">
+          <span class="status-dot" id="statusDot"></span>
+          <span id="statusText">CONNECTING...</span>
+        </div>
+        <div class="nav-db-badge">
+          <span>STORE:</span> nids_deploy.db
+        </div>
+      </div>
+    </header>
+
+    <!-- Empty-State Alert Banner (shown only if database missing) -->
+    <div id="emptyStateBanner" class="alert-banner" style="display:none;">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="flex-shrink:0;color:#f59e0b;">
+        <circle cx="12" cy="12" r="10"></circle>
+        <line x1="12" y1="8" x2="12" y2="12"></line>
+        <line x1="12" y1="16" x2="12.01" y2="16"></line>
+      </svg>
+      <div>
+        <strong style="color:#fbbf24;">Deployment Database Pending:</strong>
+        Execute the ETL pipeline (<code>python -m etl.run_etl</code>) to ingest flows into SQLite.
+      </div>
+    </div>
+
+    <!-- ====================================================================
+         2. ASYMMETRIC BENTO GRID (True HorizonX Layout)
+         ==================================================================== -->
+    <section class="bento-kpi-grid">
+
+      <!-- HERO METRIC CARD: Total Evaluated Flows (Spans 2 Rows on Desktop) -->
+      <article class="bento-card kpi-hero-card animate-card" id="kpiTotal">
+        <div class="bento-inner">
+          <div class="kpi-card-header">
+            <div class="kpi-label-group">
+              <span class="kpi-label">Total Flows Evaluated</span>
+              <span class="kpi-sublabel">Aggregated Ingestion Telemetry</span>
+            </div>
+            <span class="pill pill-neutral">CICIDS2017</span>
+          </div>
+
+          <div>
+            <div class="kpi-metric-hero" id="valTotalFlows">—</div>
+            
+            <!-- Dynamic Telemetry Distribution Bar -->
+            <div class="telemetry-progress-wrap">
+              <div class="telemetry-progress-bar">
+                <div class="bar-segment-benign" id="kpiFlowBarBenign" style="width: 80%;"></div>
+                <div class="bar-segment-attack" id="kpiFlowBarAttack" style="width: 20%;"></div>
+              </div>
+              <div class="telemetry-labels">
+                <span class="lbl-benign" id="kpiFlowTextBenign">80.0% Benign</span>
+                <span class="lbl-attack" id="kpiFlowTextAttack">20.0% Malicious</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="kpi-hero-footer">
+            <span>Stratified Sample of 2.83M Full Corpus</span>
+            <span class="pill pill-cyan">ONLINE STORE</span>
+          </div>
+        </div>
+      </article>
+
+      <!-- CARD 2: Malicious Threat Flows (High-Priority Threat Target) -->
+      <article class="bento-card kpi-card-compact animate-card" id="kpiAttack">
+        <div class="bento-inner">
+          <div class="kpi-card-header">
+            <div class="kpi-label-group">
+              <span class="kpi-label">Malicious Threats</span>
+              <span class="kpi-sublabel">Identified Threat Flows</span>
+            </div>
+            <span class="pill pill-rose">CLASS 1 TARGET</span>
+          </div>
+
+          <div class="kpi-metric-standard rose" id="valAttackFlows">—</div>
+
+          <div class="kpi-compact-footer">
+            <span class="footer-bullet rose"></span>
+            <span id="valAttackPct">20.00% Threat Ratio</span>
+          </div>
+        </div>
+      </article>
+
+      <!-- CARD 3: Benign Traffic (Normal Operational Baseline) -->
+      <article class="bento-card kpi-card-compact animate-card" id="kpiBenign">
+        <div class="bento-inner">
+          <div class="kpi-card-header">
+            <div class="kpi-label-group">
+              <span class="kpi-label">Benign Traffic</span>
+              <span class="kpi-sublabel">Operational Flow Baseline</span>
+            </div>
+            <span class="pill pill-emerald">OPERATIONAL</span>
+          </div>
+
+          <div class="kpi-metric-standard emerald" id="valBenignFlows">—</div>
+
+          <div class="kpi-compact-footer">
+            <span class="footer-bullet emerald"></span>
+            <span id="valBenignPct">80.00% Normal Traffic</span>
+          </div>
+        </div>
+      </article>
+
+      <!-- CARD 4: Attack Categories (HorizonX Wide Bento Card with Pill Badges) -->
+      <article class="bento-card kpi-wide-card animate-card" id="kpiAttackTypes">
+        <div class="bento-inner">
+          <div class="kpi-wide-metric-box">
+            <span class="kpi-label">Attack Categories</span>
+            <div class="kpi-metric-standard neutral" id="valAttackTypes">—</div>
+            <span class="kpi-sublabel">Distinct Threat Vectors Detected</span>
+          </div>
+
+          <!-- HorizonX Pill Badges for Threat Spectrum -->
+          <div class="kpi-pill-cluster">
+            <span class="pill pill-amber">DDoS</span>
+            <span class="pill pill-cyan">PortScan</span>
+            <span class="pill pill-orange">DoS Hulk</span>
+            <span class="pill pill-sky">FTP-Patator</span>
+            <span class="pill pill-indigo">SSH-Patator</span>
+            <span class="pill pill-purple">Botnet</span>
+            <span class="pill pill-pink">Web Attack</span>
+            <span class="pill pill-rose">Infiltration</span>
+          </div>
+        </div>
+      </article>
+
+    </section>
+
+    <!-- ====================================================================
+         3. CHARTS ROW 1: Donut (5fr) + Attack Vector Breakdown (7fr)
+         ==================================================================== -->
+    <section class="charts-dual-grid">
+
+      <!-- Binary Class Imbalance Donut -->
+      <article class="bento-card chart-card animate-card">
+        <div class="bento-inner">
+          <div class="chart-header">
+            <div class="chart-title-area">
+              <div class="chart-title-row">
+                <h2 class="chart-title">1. Binary Class Imbalance</h2>
+                <span class="pill pill-emerald">PRD 3.6</span>
+              </div>
+              <p class="chart-desc">Proportion of Benign operational traffic vs. Malicious threat flows.</p>
+            </div>
+          </div>
+          <div id="chartBinaryDist" style="width:100%;height:330px;"></div>
+        </div>
+      </article>
+
+      <!-- Attack Breakdown Bar Chart -->
+      <article class="bento-card chart-card animate-card">
+        <div class="bento-inner">
+          <div class="chart-header">
+            <div class="chart-title-area">
+              <div class="chart-title-row">
+                <h2 class="chart-title">Attack Flow Counts by Threat Vector</h2>
+                <span class="pill pill-amber">11 Classes</span>
+              </div>
+              <p class="chart-desc">Granular distribution of detected flows across specific cyberattack profiles.</p>
+            </div>
+          </div>
+          <!-- Left margin expanded in charts.js so labels are 100% visible -->
+          <div id="chartAttackBreakdown" style="width:100%;height:330px;"></div>
+        </div>
+      </article>
+
+    </section>
+
+    <!-- ====================================================================
+         4. CHARTS ROW 2: 13×13 Pearson Correlation Heatmap
+         ==================================================================== -->
+    <article class="bento-card chart-card-full animate-card">
+      <div class="bento-inner">
+        <div class="chart-header">
+          <div class="chart-title-area">
+            <div class="chart-title-row">
+              <h2 class="chart-title">2. Feature Correlation Heatmap</h2>
+              <span class="pill pill-cyan">13 × 13 Real Matrix</span>
+            </div>
+            <p class="chart-desc">
+              Pairwise Pearson correlation between the top 12 telemetry features most correlated with <code>is_attack</code>.
+            </p>
+          </div>
+          <div class="chart-meta-badge">
+            <span>Precomputed in</span>
+            <span class="meta-val">nids_deploy.db</span>
+          </div>
+        </div>
+        <div class="chart-scroll-wrap">
+          <div id="chartCorrelationHeatmap" style="width:100%;min-width:700px;height:520px;"></div>
+        </div>
+      </div>
+    </article>
+
+    <!-- ====================================================================
+         5. CHARTS ROW 3: Volumetric Profiling (Log-Log Scatter)
+         ==================================================================== -->
+    <article class="bento-card chart-card-full animate-card">
+      <div class="bento-inner">
+        <div class="chart-header">
+          <div class="chart-title-area">
+            <div class="chart-title-row">
+              <h2 class="chart-title">3. Volumetric Profiling: Flow Packet Rate vs. Flow Duration</h2>
+              <span class="pill pill-amber">Stratified by Attack Label</span>
+            </div>
+            <p class="chart-desc">
+              Log-log distribution highlighting high-rate DDoS and volumetric floods vs. low-and-slow penetration vectors.
+            </p>
+          </div>
+          <div class="chart-meta-badge">
+            <span>Sampled N =</span>
+            <span class="meta-val">5,215</span>
+          </div>
+        </div>
+        <div class="chart-scroll-wrap">
+          <div id="chartVolumetricScatter" style="width:100%;min-width:700px;height:540px;"></div>
+        </div>
+      </div>
+    </article>
+
+    <!-- ====================================================================
+         6. COMPACT MINIMAL FOOTER
+         ==================================================================== -->
+    <footer class="app-footer">
+      <div class="footer-left">
+        <span class="footer-beacon"></span>
+        <span>NIDS Intelligence Platform &bull; Phase 1 Data Ingestion &amp; Deployed EDA</span>
+      </div>
+      <div>Read-Only SQLite Ingestion Store &bull; Decoupled Static Architecture</div>
+    </footer>
+
+  </div><!-- /app-container -->
+
+  <!-- Visualization Engine & Interactions -->
+  <script src="/static/js/charts.js"></script>
+</body>
+</html>
