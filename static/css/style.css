@@ -1,19 +1,19 @@
-﻿/* ==========================================================================
-   NIDS Intelligence Dashboard â€” Bespoke Design System
+/* ==========================================================================
+   NIDS Intelligence Dashboard — Bespoke Design System
    Flight-Tracker Solid Charcoal Dark Material + HorizonX Asymmetric Bento
-   Pure CSS Â· Hardware Accelerated Â· Zero AI Slop
+   Pure CSS · Hardware Accelerated · Zero AI Slop
    ========================================================================== */
 
-/* â”€â”€ Design Tokens â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
+/* ── Design Tokens ──────────────────────────────────────────────────────── */
 :root {
-  /* Surfaces â€” Flight Tracker Solid Charcoal (Never blue-slate, no glowing halos) */
+  /* Surfaces — Flight Tracker Solid Charcoal (Never blue-slate, no glowing halos) */
   --bg-page:         #0d0e12;
   --bg-card:         #14161c;
   --bg-card-hover:   #181a22;
   --bg-card-inner:   #101217;
   --bg-pill:         rgba(255, 255, 255, 0.05);
 
-  /* Borders â€” Crisp, ultra-thin 1px geometry */
+  /* Borders — Crisp, ultra-thin 1px geometry */
   --border-card:     rgba(255, 255, 255, 0.08);
   --border-hover:    rgba(255, 255, 255, 0.16);
   --border-subtle:   rgba(255, 255, 255, 0.05);
@@ -25,7 +25,7 @@
   --text-muted:      #525c6e;
   --text-inverse:    #0d0e12;
 
-  /* Semantic Accents â€” Restrained & Purposeful */
+  /* Semantic Accents — Restrained & Purposeful */
   --accent-emerald:  #10b981;
   --accent-emerald-dim: rgba(16, 185, 129, 0.12);
   --accent-rose:     #f43f5e;
@@ -58,7 +58,7 @@
   --duration-normal: 220ms;
 }
 
-/* â”€â”€ Reset & Baseline â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
+/* ── Reset & Baseline ───────────────────────────────────────────────────── */
 *, *::before, *::after {
   box-sizing: border-box;
   margin: 0;
@@ -68,3 +68,739 @@
 html {
   background-color: var(--bg-page);
   color-scheme: dark;
+  scroll-behavior: smooth;
+}
+
+body {
+  background-color: var(--bg-page);
+  color: var(--text-primary);
+  font-family: var(--font-sans);
+  font-size: 13px;
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+
+/* ── Scrollbars ─────────────────────────────────────────────────────────── */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+::-webkit-scrollbar-track {
+  background: var(--bg-page);
+}
+::-webkit-scrollbar-thumb {
+  background: #252833;
+  border-radius: var(--radius-pill);
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #363b4b;
+}
+
+/* ── Layout Shell ───────────────────────────────────────────────────────── */
+.app-container {
+  max-width: 1320px;
+  width: 100%;
+  margin: 0 auto;
+  padding: 16px 20px 48px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+/* ── Bespoke Bento Card Primitive ───────────────────────────────────────── */
+.bento-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border-card);
+  border-radius: var(--radius-card);
+  position: relative;
+  overflow: hidden;
+  box-shadow: var(--shadow-card);
+  transition: border-color var(--duration-fast) var(--ease-out),
+              transform var(--duration-fast) var(--ease-out),
+              box-shadow var(--duration-fast) var(--ease-out);
+}
+
+/* Specular top hairline (Apple & HorizonX physical edge highlight) */
+.bento-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 1px;
+  background: linear-gradient(90deg, transparent 0%, rgba(255, 255, 255, 0.08) 50%, transparent 100%);
+  pointer-events: none;
+  z-index: 2;
+}
+
+.bento-card:hover {
+  border-color: var(--border-hover);
+  transform: translateY(-1.5px);
+  box-shadow: var(--shadow-hover);
+}
+
+.bento-card:active {
+  transform: scale(0.995);
+  transition-duration: 80ms;
+}
+
+/* Card inner padding defaults */
+.bento-inner {
+  padding: 22px 24px;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+/* ── 1. COMPACT MODERN NAVBAR ───────────────────────────────────────────── */
+.navbar {
+  background: var(--bg-card);
+  border: 1px solid var(--border-card);
+  border-radius: var(--radius-lg);
+  padding: 10px 18px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.4);
+  position: relative;
+  z-index: 10;
+}
+
+.navbar::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0; height: 1px;
+  background: linear-gradient(90deg, transparent 0%, rgba(255, 255, 255, 0.12) 50%, transparent 100%);
+  pointer-events: none;
+}
+
+.nav-left {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-shrink: 0;
+}
+
+.nav-brand-icon {
+  width: 32px;
+  height: 32px;
+  border-radius: 9px;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.09);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--text-primary);
+  flex-shrink: 0;
+}
+
+.nav-title-group {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.nav-title {
+  font-size: 0.92rem;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  color: var(--text-primary);
+  white-space: nowrap;
+}
+
+.nav-version {
+  display: inline-flex;
+  align-items: center;
+  padding: 1.5px 7px;
+  border-radius: var(--radius-pill);
+  font-family: var(--font-mono);
+  font-size: 9.5px;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  color: var(--text-secondary);
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+/* Integrated Dynamic Sample Notice in Navbar Center */
+.nav-center {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex: 1;
+}
+
+.nav-sample-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  background: var(--bg-card-inner);
+  border: 1px solid rgba(255, 255, 255, 0.07);
+  padding: 5px 14px;
+  border-radius: var(--radius-pill);
+  font-size: 11.5px;
+  color: var(--text-secondary);
+  white-space: nowrap;
+}
+
+.nav-sample-count {
+  font-family: var(--font-mono);
+  font-weight: 700;
+  color: var(--text-primary);
+  letter-spacing: -0.01em;
+}
+
+.nav-sample-tag {
+  font-family: var(--font-mono);
+  font-size: 9px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.07em;
+  color: var(--accent-cyan);
+  background: var(--accent-cyan-dim);
+  border: 1px solid rgba(6, 182, 212, 0.22);
+  padding: 1px 7px;
+  border-radius: var(--radius-pill);
+}
+
+/* Nav Right: Status Beacon & Database Tag */
+.nav-right {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-shrink: 0;
+}
+
+.nav-status-badge {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  padding: 4px 12px;
+  border-radius: var(--radius-pill);
+  background: var(--bg-card-inner);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  font-family: var(--font-mono);
+  font-size: 10.5px;
+  font-weight: 600;
+  color: var(--text-secondary);
+}
+
+.status-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: #4a5260;
+  flex-shrink: 0;
+  transition: background 0.3s ease;
+}
+
+.status-dot.online {
+  background: var(--accent-emerald);
+  box-shadow: 0 0 6px rgba(16, 185, 129, 0.5);
+  animation: beacon-pulse 2.2s infinite ease-in-out;
+}
+
+.status-dot.offline {
+  background: var(--accent-rose);
+  box-shadow: 0 0 6px rgba(244, 63, 94, 0.5);
+}
+
+@keyframes beacon-pulse {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50% { opacity: 0.45; transform: scale(1.15); }
+}
+
+.nav-db-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 4px 11px;
+  border-radius: var(--radius-pill);
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  font-family: var(--font-mono);
+  font-size: 10.5px;
+  color: var(--text-muted);
+}
+.nav-db-badge span {
+  color: var(--text-secondary);
+  font-weight: 600;
+}
+
+/* ── Alert Banner (Hidden unless DB missing) ────────────────────────────── */
+.alert-banner {
+  background: rgba(245, 158, 11, 0.06);
+  border: 1px solid rgba(245, 158, 11, 0.22);
+  border-radius: var(--radius-md);
+  padding: 12px 18px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font-size: 12.5px;
+  color: #fde68a;
+}
+.alert-banner code {
+  background: rgba(0, 0, 0, 0.4);
+  padding: 2px 7px;
+  border-radius: 4px;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  color: var(--accent-cyan);
+}
+
+/* ── 2. ASYMMETRIC BENTO GRID (TRUE HORIZONX LAYOUT) ────────────────────── */
+.bento-kpi-grid {
+  display: grid;
+  grid-template-columns: 1.35fr 1fr 1fr;
+  grid-template-rows: auto auto;
+  gap: 16px;
+}
+
+/* Hero Metric Card: Total Evaluated Flows (Spans both rows on desktop) */
+.kpi-hero-card {
+  grid-column: 1;
+  grid-row: 1 / span 2;
+  display: flex;
+  flex-direction: column;
+}
+
+.kpi-hero-card .bento-inner {
+  justify-content: space-between;
+  gap: 18px;
+}
+
+/* Card Header Structure */
+.kpi-card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 10px;
+}
+
+.kpi-label-group {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+
+.kpi-label {
+  font-size: 10px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--text-secondary);
+}
+
+.kpi-sublabel {
+  font-size: 11px;
+  color: var(--text-muted);
+}
+
+/* Pill Badges (HorizonX Style) */
+.pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 3px 9px;
+  border-radius: var(--radius-pill);
+  font-family: var(--font-mono);
+  font-size: 9.5px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+.pill-neutral {
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  color: var(--text-secondary);
+}
+
+.pill-rose {
+  background: var(--accent-rose-dim);
+  border: 1px solid rgba(244, 63, 94, 0.24);
+  color: #fb7185;
+}
+
+.pill-emerald {
+  background: var(--accent-emerald-dim);
+  border: 1px solid rgba(16, 185, 129, 0.24);
+  color: #34d399;
+}
+
+.pill-amber {
+  background: var(--accent-amber-dim);
+  border: 1px solid rgba(245, 158, 11, 0.24);
+  color: #fbbf24;
+}
+
+.pill-cyan {
+  background: var(--accent-cyan-dim);
+  border: 1px solid rgba(6, 182, 212, 0.24);
+  color: #67e8f9;
+}
+
+.pill-purple {
+  background: var(--accent-purple-dim);
+  border: 1px solid rgba(139, 92, 246, 0.24);
+  color: #c084fc;
+}
+
+.pill-orange {
+  background: rgba(249, 115, 22, 0.12);
+  border: 1px solid rgba(249, 115, 22, 0.24);
+  color: #fb923c;
+}
+
+.pill-sky {
+  background: rgba(56, 189, 248, 0.12);
+  border: 1px solid rgba(56, 189, 248, 0.24);
+  color: #7dd3fc;
+}
+
+.pill-indigo {
+  background: rgba(129, 140, 248, 0.12);
+  border: 1px solid rgba(129, 140, 248, 0.24);
+  color: #a5b4fc;
+}
+
+.pill-pink {
+  background: rgba(236, 72, 153, 0.12);
+  border: 1px solid rgba(236, 72, 153, 0.24);
+  color: #f472b6;
+}
+
+/* Oversized KPI Metric Typography */
+.kpi-metric-hero {
+  font-family: var(--font-mono);
+  font-size: 3.3rem;
+  font-weight: 800;
+  letter-spacing: -0.04em;
+  line-height: 1;
+  color: var(--text-primary);
+  margin: 8px 0;
+}
+
+.kpi-metric-standard {
+  font-family: var(--font-mono);
+  font-size: 2.35rem;
+  font-weight: 800;
+  letter-spacing: -0.035em;
+  line-height: 1;
+  margin: 6px 0;
+}
+
+.kpi-metric-standard.rose {
+  color: #fb7185;
+}
+
+.kpi-metric-standard.emerald {
+  color: #34d399;
+}
+
+.kpi-metric-standard.neutral {
+  color: var(--text-primary);
+}
+
+/* HorizonX Mini Segmented Telemetry Bar (Inside Hero Card) */
+.telemetry-progress-wrap {
+  background: var(--bg-card-inner);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  border-radius: var(--radius-md);
+  padding: 12px 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.telemetry-progress-bar {
+  height: 8px;
+  width: 100%;
+  border-radius: var(--radius-pill);
+  background: rgba(255, 255, 255, 0.05);
+  display: flex;
+  overflow: hidden;
+}
+
+.bar-segment-benign {
+  background: var(--accent-emerald);
+  height: 100%;
+  transition: width 0.8s var(--ease-out);
+}
+
+.bar-segment-attack {
+  background: var(--accent-rose);
+  height: 100%;
+  transition: width 0.8s var(--ease-out);
+}
+
+.telemetry-labels {
+  display: flex;
+  justify-content: space-between;
+  font-family: var(--font-mono);
+  font-size: 10.5px;
+  font-weight: 600;
+}
+.telemetry-labels .lbl-benign { color: #34d399; }
+.telemetry-labels .lbl-attack { color: #fb7185; }
+
+.kpi-hero-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 11px;
+  color: var(--text-muted);
+  border-top: 1px solid var(--border-divider);
+  padding-top: 14px;
+}
+
+/* Card 2 & Card 3: Standard Metric Cards */
+.kpi-card-compact {
+  display: flex;
+  flex-direction: column;
+}
+
+.kpi-card-compact .bento-inner {
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.kpi-compact-footer {
+  border-top: 1px solid var(--border-divider);
+  padding-top: 10px;
+  font-size: 11px;
+  color: var(--text-secondary);
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.footer-bullet {
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+.footer-bullet.rose { background: var(--accent-rose); }
+.footer-bullet.emerald { background: var(--accent-emerald); }
+
+/* Card 4: HorizonX Wide Attack Categories Card */
+.kpi-wide-card {
+  grid-column: 2 / span 2;
+  grid-row: 2;
+}
+
+.kpi-wide-card .bento-inner {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+  gap: 24px;
+  padding: 18px 24px;
+}
+
+.kpi-wide-metric-box {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  flex-shrink: 0;
+}
+
+.kpi-pill-cluster {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  justify-content: flex-end;
+  align-items: center;
+}
+
+/* ── 3. CHARTS SECTIONS ─────────────────────────────────────────────────── */
+.charts-dual-grid {
+  display: grid;
+  grid-template-columns: 5fr 7fr;
+  gap: 16px;
+}
+
+.chart-card-full {
+  width: 100%;
+}
+
+.chart-card .bento-inner {
+  padding: 22px 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.chart-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 14px;
+  flex-wrap: wrap;
+}
+
+.chart-title-area {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+
+.chart-title-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.chart-title {
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  letter-spacing: -0.015em;
+}
+
+.chart-desc {
+  font-size: 11.5px;
+  color: var(--text-secondary);
+  line-height: 1.45;
+  max-width: 58ch;
+}
+.chart-desc code {
+  background: var(--bg-card-inner);
+  padding: 1px 6px;
+  border-radius: 4px;
+  font-family: var(--font-mono);
+  font-size: 10.5px;
+  color: var(--accent-cyan);
+}
+
+.chart-meta-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 10px;
+  border-radius: var(--radius-sm);
+  background: var(--bg-card-inner);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  font-family: var(--font-mono);
+  font-size: 10px;
+  color: var(--text-muted);
+  white-space: nowrap;
+}
+.chart-meta-badge .meta-val {
+  color: var(--text-primary);
+  font-weight: 700;
+}
+
+.chart-scroll-wrap {
+  width: 100%;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+/* ── Deep Plotly Overrides ──────────────────────────────────────────────── */
+.js-plotly-plot .plotly .modebar {
+  display: none !important; /* Hide Plotly toolbar entirely */
+}
+
+/* Rounded corners for Plotly horizontal bars */
+.js-plotly-plot .trace.bars path {
+  rx: 4px !important;
+  ry: 4px !important;
+}
+
+/* ── 4. FOOTER ──────────────────────────────────────────────────────────── */
+.app-footer {
+  margin-top: 8px;
+  padding: 18px 24px;
+  background: var(--bg-card);
+  border: 1px solid var(--border-card);
+  border-radius: var(--radius-lg);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 12px;
+  font-family: var(--font-mono);
+  font-size: 10.5px;
+  color: var(--text-muted);
+}
+
+.footer-left {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.footer-beacon {
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: var(--accent-cyan);
+}
+
+/* ── 5. GSAP ANIMATION PREPARATION ──────────────────────────────────────── */
+.animate-card {
+  opacity: 1; /* Guaranteed visibility even before GSAP boots */
+  transform: none;
+}
+
+/* ── 6. RESPONSIVENESS & BREAKPOINTS ────────────────────────────────────── */
+@media (max-width: 880px) {
+  .bento-kpi-grid {
+    grid-template-columns: 1fr 1fr;
+    grid-template-rows: auto auto auto;
+  }
+  .kpi-hero-card {
+    grid-column: 1 / span 2;
+    grid-row: 1;
+  }
+  .kpi-wide-card {
+    grid-column: 1 / span 2;
+    grid-row: 3;
+  }
+  .charts-dual-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 768px) {
+  .app-container {
+    padding: 12px 14px 32px;
+  }
+  .navbar {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 12px;
+  }
+  .nav-center {
+    width: 100%;
+    justify-content: flex-start;
+  }
+  .nav-right {
+    width: 100%;
+    justify-content: space-between;
+  }
+  .bento-kpi-grid {
+    grid-template-columns: 1fr;
+  }
+  .kpi-hero-card {
+    grid-column: 1;
+  }
+  .kpi-wide-card {
+    grid-column: 1;
+  }
+  .kpi-wide-card .bento-inner {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+  .kpi-pill-cluster {
+    justify-content: flex-start;
+  }
+}
