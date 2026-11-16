@@ -1,4 +1,4 @@
-﻿# NIDS Project
+# NIDS Project
 
 AI-Powered Network Intrusion Detection System (JSON API Edition).
 
